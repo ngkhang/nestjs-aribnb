@@ -26,6 +26,27 @@ module.exports = {
       {
         'endOfLine': 'auto'
       }
-    ]
+    ],
+    'arrow-body-style': [
+      2,
+      'as-needed',
+      {
+        'requireReturnForObjectLiteral': true
+      }
+    ],
+    'no-unused-vars': [
+      1,
+      {
+        'args': 'after-used',
+        'argsIgnorePattern': '^_'
+      }
+    ],
+    'no-console': 1,
+    'no-lonely-if': 1,
+    'no-undefined': 2,
+    'consistent-return': 0,
+    'no-nested-ternary': 1,
+    'no-unexpected-multiline': 'warn',
+    'prefer-const': 2
   },
 };

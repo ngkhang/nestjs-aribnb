@@ -24,8 +24,13 @@ body:
       label: Screenshots (if appropriate)
       description: If applicable, add screenshots to help explain your problem.
   - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist (if needed)
+      placeholder: |-
+        - [ ]
+  - type: textarea
     id: extend-content
     attributes:
       label: Additional context
       description: Add any other context about the pull request here.
-

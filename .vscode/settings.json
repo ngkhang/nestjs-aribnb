@@ -6,5 +6,6 @@
     "source.fixAll.ts": "always",
     "source.organizeImports": "always"
   },
-  "prettier.endOfLine": "crlf"
+  "prettier.endOfLine": "crlf",
+  "files.eol": "\r\n"
 }

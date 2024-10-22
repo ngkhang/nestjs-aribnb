@@ -9,14 +9,14 @@ async function bootstrap() {
 
   // Config Env App
   const configService = app.get(ConfigService);
-  const { host, port } = configService.appConfig;
-  const SERVER_PATH = `http://${host}:${port}`;
+  const { APP_HOST, APP_PORT } = configService.appConfig;
+  const SERVER_PATH = `http://${APP_HOST}:${APP_PORT}`;
 
   // Setup Swagger
   setupSwagger(app, SERVER_PATH);
 
   // Listen Server
-  await app.listen(port, () =>
+  await app.listen(APP_PORT, () =>
     console.log(`Server is running on: ${SERVER_PATH}`)
   );
 }

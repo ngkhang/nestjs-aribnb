@@ -9,13 +9,14 @@ import { JwtStrategy } from './jwt.strategy';
     NestJwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const { jwtConfig } = configService;
+        const { AUTH_JWT_SECRET_KEY, AUTH_JWT_TOKEN_EXPIRES_IN } =
+          configService.authConfig;
 
         return {
           global: true,
-          secret: jwtConfig.jwt_secret_key,
+          secret: AUTH_JWT_SECRET_KEY,
           signOptions: {
-            expiresIn: '60s',
+            expiresIn: AUTH_JWT_TOKEN_EXPIRES_IN,
           },
         };
       },

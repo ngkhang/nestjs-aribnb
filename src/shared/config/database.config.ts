@@ -4,7 +4,7 @@ import { validateConfig } from 'src/utils/validate-config.util';
 
 export const DB_CONFIG_KEY = 'db';
 export interface DbConfig {
-  db_url: string;
+  DATABASE_URL: string;
 }
 
 class EnvironmentVariables {
@@ -12,10 +12,14 @@ class EnvironmentVariables {
   DATABASE_URL: string;
 }
 
-export default registerAs(DB_CONFIG_KEY, (): DbConfig => {
-  validateConfig(process.env, EnvironmentVariables);
+const dbConfig = registerAs(DB_CONFIG_KEY, (): DbConfig => {
+  const ENV = process.env;
+
+  validateConfig(ENV, EnvironmentVariables);
 
   return {
-    db_url: process.env.DATABASE_URL,
+    DATABASE_URL: ENV.DATABASE_URL,
   };
 });
+
+export default dbConfig;

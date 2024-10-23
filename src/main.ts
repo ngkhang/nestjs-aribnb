@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from './shared/config/config.service';
 import setupSwagger from './utils/swagger.util';
@@ -11,6 +12,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const { APP_HOST, APP_PORT } = configService.appConfig;
   const SERVER_PATH = `http://${APP_HOST}:${APP_PORT}`;
+
+  // Auto-Validation
+  app.useGlobalPipes(new ValidationPipe());
+
+  // Apply global transformation
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // Setup Swagger
   setupSwagger(app, SERVER_PATH);

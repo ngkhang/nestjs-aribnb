@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from './config/config.module';
-import { ConfigService } from './config/config.service';
-import { PrismaService } from './prisma/prisma.service';
+import { JwtModule } from './jwt/jwt.module';
+import { PrismaModule } from './prisma/prisma.module';
 
+// TODO: Refactor Shared Module
+@Global()
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, PrismaModule, JwtModule],
   controllers: [],
-  providers: [ConfigService, PrismaService],
-  exports: [SharedModule, PrismaService],
+  providers: [],
+  exports: [SharedModule, ConfigModule, PrismaModule, JwtModule],
 })
 export class SharedModule {}

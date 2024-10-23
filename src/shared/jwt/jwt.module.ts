@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule as NestJwtModule } from '@nestjs/jwt';
+import { JwtService, JwtModule as NestJwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -25,6 +25,7 @@ import { JwtStrategy } from './jwt.strategy';
     ConfigModule,
   ],
   controllers: [],
-  exports: [NestJwtModule, JwtStrategy],
+  providers: [JwtStrategy, JwtService],
+  exports: [NestJwtModule, JwtStrategy, JwtService],
 })
 export class JwtModule {}

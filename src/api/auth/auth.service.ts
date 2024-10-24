@@ -4,13 +4,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { plainToClass } from 'class-transformer';
 import { ResponseType } from 'src/common/types/response/response.type';
 import { UserResponseDto } from 'src/common/types/response/user-response.type';
 import { ConfigService } from 'src/shared/config/config.service';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { passwordService } from 'src/utils/password.util';
+import { LoginUserDto } from '../../common/dto/user/login-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
     return {
       statusCode: 200,
       content: {
-        user: new UserResponseDto({ ...user, password: userLogin.password }),
+        user: { ...user, password: userLogin.password },
         token,
       },
       message: 'Login successful',
@@ -76,7 +77,6 @@ export class AuthService {
         ],
       },
     });
-
     if (existingAccount) {
       throw new ConflictException(
         `An account with this ${existingAccount.email === userSignUp.email ? 'email' : 'username'} already exists`
@@ -86,7 +86,6 @@ export class AuthService {
     // TODO: Handle only Admin must role=Admin
 
     // TODO: Handle format request and response
-
     const { fullName, password, ...user } = userSignUp;
     // Insert data user's into DB
     const newUser = await this.prisma.user.create({
@@ -97,11 +96,17 @@ export class AuthService {
       },
     });
 
+    const formatUser = plainToClass(
+      UserResponseDto,
+      { ...newUser, password },
+      {
+        excludeExtraneousValues: true,
+      }
+    );
+
     return {
       statusCode: 200,
-      content: {
-        ...new UserResponseDto({ ...newUser, password }),
-      },
+      content: { ...formatUser },
       message: 'Create a new account successful',
       dateTime: new Date(),
     };
@@ -164,6 +169,9 @@ export class AuthService {
     if (!passwordService.comparePassword(userLogin.password, user.password))
       throw new UnauthorizedException('Password is not correct');
 
-    return user;
+    const format = plainToClass(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
+    return { ...format };
   };
 }

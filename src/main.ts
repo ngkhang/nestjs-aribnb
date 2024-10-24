@@ -14,7 +14,11 @@ async function bootstrap() {
   const SERVER_PATH = `http://${APP_HOST}:${APP_PORT}`;
 
   // Auto-Validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    })
+  );
 
   // Apply global transformation
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

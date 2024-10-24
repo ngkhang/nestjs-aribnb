@@ -1,26 +1,16 @@
 import { Exclude, Expose } from 'class-transformer';
 import { BaseUserDto } from 'src/common/dto/user/base-user.dto';
 
-export class UserResponseDto {
-  id: number;
-  email: string;
-  password: string;
-  username: string;
-  status: string;
-
-  @Expose({ name: 'fullName' })
-  full_name: string;
-
-  @Expose({ name: 'registeredAt' })
-  registered_at: Date;
-
-  @Expose({ name: 'updatedAt' })
-  updated_at: Date;
+export class UserResponseDto extends BaseUserDto {
+  @Expose({ name: 'full_name' })
+  fullName: string;
 
   @Exclude()
-  refresh_token: string;
+  refreshToken?: string;
 
-  constructor(partial: Partial<BaseUserDto>) {
-    Object.assign(this, partial);
-  }
+  @Expose({ name: 'registered_at' })
+  registeredAt: Date;
+
+  @Expose({ name: 'updated_at' })
+  updatedAt?: Date;
 }

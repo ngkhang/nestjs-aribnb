@@ -4,9 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { plainToClass } from 'class-transformer';
-import { ResponseType } from 'src/common/types/response/response.type';
-import { UserResponseDto } from 'src/common/types/response/user-response.type';
+import { IResponse } from 'src/common/types/response/response.type';
+import { UserPrisma } from 'src/common/types/user/user.type';
 import { ConfigService } from 'src/shared/config/config.service';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { passwordService } from 'src/utils/password.util';
@@ -26,7 +25,7 @@ export class AuthService {
    */
   login = async (
     userLogin: LoginUserDto
-  ): Promise<ResponseType<{ user: UserResponseDto; token: string }>> => {
+  ): Promise<IResponse<UserPrisma, { token: string }>> => {
     // Validate email and password
     const user = await this.verifyUser(userLogin);
 
@@ -46,20 +45,19 @@ export class AuthService {
 
     // Response accessToken for client
     return {
-      statusCode: 200,
-      content: {
-        user: { ...user, password: userLogin.password },
-        token,
+      dataTransform: {
+        key: 'user',
+        value: { ...user, password: userLogin.password },
       },
+      rawData: { token },
       message: 'Login successful',
-      dateTime: new Date(),
     };
   };
 
   // SignUp
   signUp = async (
     userSignUp: CreateUserDto
-  ): Promise<ResponseType<UserResponseDto>> => {
+  ): Promise<IResponse<UserPrisma>> => {
     // Check email or username have unique
     const existingAccount = await this.prisma.user.findFirst({
       where: {
@@ -85,7 +83,6 @@ export class AuthService {
 
     // TODO: Handle only Admin must role=Admin
 
-    // TODO: Handle format request and response
     const { fullName, password, ...user } = userSignUp;
     // Insert data user's into DB
     const newUser = await this.prisma.user.create({
@@ -95,20 +92,9 @@ export class AuthService {
         password: await passwordService.hashPassword(password),
       },
     });
-
-    const formatUser = plainToClass(
-      UserResponseDto,
-      { ...newUser, password },
-      {
-        excludeExtraneousValues: true,
-      }
-    );
-
     return {
-      statusCode: 200,
-      content: { ...formatUser },
+      dataTransform: { key: 'user', value: newUser },
       message: 'Create a new account successful',
-      dateTime: new Date(),
     };
   };
 
@@ -155,9 +141,7 @@ export class AuthService {
   /**
    * Verify email and password user's
    */
-  private verifyUser = async (
-    userLogin: LoginUserDto
-  ): Promise<UserResponseDto> => {
+  private verifyUser = async (userLogin: LoginUserDto): Promise<UserPrisma> => {
     // Verify email
     const user = await this.prisma.user.findUnique({
       where: { email: userLogin.email },
@@ -168,10 +152,6 @@ export class AuthService {
     // Check password
     if (!passwordService.comparePassword(userLogin.password, user.password))
       throw new UnauthorizedException('Password is not correct');
-
-    const format = plainToClass(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
-    return { ...format };
+    return user;
   };
 }

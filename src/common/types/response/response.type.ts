@@ -1,4 +1,11 @@
-// TODO: Custom Response format
+export class IResponse<D, R = null> {
+  dataTransform: {
+    key: string;
+    value: D;
+  };
+  rawData?: R;
+  message: string;
+}
 
 export class ResponseType<T> {
   statusCode: number;

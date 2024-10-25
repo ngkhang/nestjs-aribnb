@@ -93,7 +93,7 @@ export class AuthService {
       },
     });
     return {
-      dataTransform: { key: 'user', value: newUser },
+      dataTransform: { key: 'user', value: { ...newUser, password } },
       message: 'Create a new account successful',
     };
   };

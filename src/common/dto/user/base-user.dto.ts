@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -10,23 +11,28 @@ import {
 import { LoginUserDto } from './login-user.dto';
 
 export class BaseUserDto extends LoginUserDto {
+  @ApiHideProperty()
   @IsOptional()
   @IsNumber()
   @Expose()
   id: number;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MaxLength(255)
+  @MinLength(6)
+  @MaxLength(125)
   @Expose()
   fullName: string;
 
+  @ApiProperty()
   @IsString()
-  @MinLength(3)
+  @MinLength(6)
   @MaxLength(50)
   @Expose()
   username: string;
 
+  @ApiProperty({ required: false, default: 'active' })
   @IsOptional()
   @IsString()
   @Expose()
